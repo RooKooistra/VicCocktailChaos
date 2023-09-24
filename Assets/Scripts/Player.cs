@@ -3,11 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour, IKitchenObjectParent
 {
     public static Player Instance { get; private set; }
 
-    public event Action<ClearCounter> OnSelectedCounterChange;
+    public event Action<BaseCounter> OnSelectedCounterChange;
 
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float rotateSpeed = 5f;
@@ -16,11 +16,14 @@ public class Player : MonoBehaviour
     [SerializeField] private float playerRadius = 0.7f;
     [SerializeField] private float playerHeight = 2f;
     [SerializeField] private LayerMask countersLayerMask; //change to interactable after demo
+    [SerializeField] private Transform kitchenObjectHoldPoint;
+
+    private KitchenObject kitchenObject;
 
 
     private bool isWalking;
     private Vector3 lastInteractDirection = Vector3.zero;
-    private ClearCounter selectedCounter;
+    private BaseCounter selectedCounter;
 
     private void Awake()
     {
@@ -36,6 +39,13 @@ public class Player : MonoBehaviour
     private void Start()
     {
         gameInput.OnInteractAction += GameInput_OnInteractAction;
+        gameInput.OnInteractSecondAction += GameInput_OnInteractSecondAction;
+    }
+
+    private void OnDisable()
+    {
+        gameInput.OnInteractAction -= GameInput_OnInteractAction;
+        gameInput.OnInteractSecondAction -= GameInput_OnInteractSecondAction;
     }
 
     private void Update()
@@ -49,7 +59,15 @@ public class Player : MonoBehaviour
         // change to interface called IInteractable
         if (selectedCounter != null)
         {
-            selectedCounter.Interact();
+            selectedCounter.Interact(this);
+        }
+    }
+
+    private void GameInput_OnInteractSecondAction()
+    {
+        if (selectedCounter != null)
+        {
+            selectedCounter.InteractSecond(this);
         }
     }
 
@@ -72,14 +90,14 @@ public class Player : MonoBehaviour
 
         if(Physics.Raycast(transform.position, lastInteractDirection, out RaycastHit raycastHit, interactDistance, countersLayerMask))
         {
-            if(raycastHit.transform.TryGetComponent(out ClearCounter clearCounter))
+            if(raycastHit.transform.TryGetComponent(out BaseCounter baseCounter)) // using inheritance but consider switching to another interface
             {
                 // Has interactable
-                if(clearCounter != selectedCounter)
+                if(baseCounter != this.selectedCounter)
                 {
-                    selectedCounter = clearCounter;
+                    this.selectedCounter = baseCounter;
 
-                    SetSelectedCounter(selectedCounter);
+                    SetSelectedCounter(this.selectedCounter);
                 }
             } 
             else
@@ -111,7 +129,7 @@ public class Player : MonoBehaviour
 
             // Attempt in X direction
             Vector3 moveDirectionX = new Vector3(moveDirection.x, 0, 0).normalized;
-            canMove = !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, playerRadius, moveDirectionX, moveDistance);
+            canMove = moveDirection.x != 0 && !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, playerRadius, moveDirectionX, moveDistance);
             if (canMove)
             {
                 // can move in the X direction
@@ -123,7 +141,7 @@ public class Player : MonoBehaviour
 
                 // Attempt in Z direction
                 Vector3 moveDirectionZ = new Vector3(0, 0, moveDirection.z).normalized;
-                canMove = !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, playerRadius, moveDirectionZ, moveDistance);
+                canMove = moveDirection.z != 0 && !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, playerRadius, moveDirectionZ, moveDistance);
                 if (canMove)
                 {
                     // can move in the Z direction
@@ -146,11 +164,36 @@ public class Player : MonoBehaviour
     }
 
     // change to an interface
-    private void SetSelectedCounter(ClearCounter clearCounter)
+    private void SetSelectedCounter(BaseCounter baseCounter)
     {
-        this.selectedCounter = clearCounter;
+        this.selectedCounter = baseCounter;
 
-        OnSelectedCounterChange?.Invoke(selectedCounter);
+        OnSelectedCounterChange?.Invoke(this.selectedCounter);
+    }
+
+    public Transform GetKitchenObjectFollowTransform()
+    {
+        return kitchenObjectHoldPoint;
+    }
+
+    public void SetKitchenObject(KitchenObject kitchenObject)
+    {
+        this.kitchenObject = kitchenObject;
+    }
+
+    public KitchenObject GetKitchenObject()
+    {
+        return kitchenObject;
+    }
+
+    public void ClearKitchenObject()
+    {
+        this.kitchenObject = null;
+    }
+
+    public bool HasKitchenObject()
+    {
+        return this.kitchenObject != null;
     }
 }
      

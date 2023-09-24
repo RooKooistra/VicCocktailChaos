@@ -4,15 +4,23 @@ using UnityEngine;
 
 public class SelectedCounterVisual : MonoBehaviour
 {
-    [SerializeField] ClearCounter clearCounter;
-    [SerializeField] GameObject visualGameObject;
+    /// <summary>
+    ///  Simple script to see if this interactable is currently one selected then setactive the selected item visual
+    /// </summary>
+    
+    [SerializeField] BaseCounter baseCounter;
+
     private void Start()
     {
         Player.Instance.OnSelectedCounterChange += Player_OnSelectedCounterChange;
     }
 
-    private void Player_OnSelectedCounterChange(ClearCounter selectedCounter)
+    private void Player_OnSelectedCounterChange(BaseCounter selectedCounter)
     {
-        visualGameObject.SetActive(selectedCounter == clearCounter);
+        foreach (Transform child in transform)
+        {
+            child.gameObject.SetActive(selectedCounter == baseCounter);
+        }
+        
     }
 }
