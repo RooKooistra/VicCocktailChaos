@@ -3,10 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CuttingCounter : BaseCounter
+public class CuttingCounter : BaseCounter, IHasProgress
 {
 
-    public event Action<float> OnProgressChanged;
+    public event Action<float, bool> OnProgressChanged;
     public event Action OnCut;
 
     [SerializeField] private CuttingRecipeSO[] cuttingRecipeSOArray;
@@ -27,7 +27,7 @@ public class CuttingCounter : BaseCounter
                     cuttingProgress = 0; // reset cutting counter
 
                     // event for progress bar
-                    OnProgressChanged?.Invoke((float) cuttingProgress / GetCuttingRecipeSOWithInput(GetKitchenObject().GetKitchenObjectSO()).cuttingProgressMax);
+                    OnProgressChanged?.Invoke((float) cuttingProgress / GetCuttingRecipeSOWithInput(GetKitchenObject().GetKitchenObjectSO()).cuttingProgressMax, false);
                 }              
             }
             else
@@ -40,7 +40,15 @@ public class CuttingCounter : BaseCounter
             // there is a kitchen object on counter
             if (player.HasKitchenObject())
             {
-                // player is carrying something - do nothing
+                // player is carrying something
+                if (player.GetKitchenObject().TryGetPlate(out PlateKitchenObject plateKitchenObject))
+                {
+                    //player holding a plate - add ingredient to plate
+                    if (plateKitchenObject.TryAddIngredient(GetKitchenObject().GetKitchenObjectSO()))
+                    {
+                        GetKitchenObject().DestroySelf();
+                    }
+                }
             }
             else
             {
@@ -59,7 +67,7 @@ public class CuttingCounter : BaseCounter
 
             // events for progress bar and animations
             OnCut?.Invoke();
-            OnProgressChanged?.Invoke((float)cuttingProgress / GetCuttingRecipeSOWithInput(GetKitchenObject().GetKitchenObjectSO()).cuttingProgressMax);
+            OnProgressChanged?.Invoke((float)cuttingProgress / GetCuttingRecipeSOWithInput(GetKitchenObject().GetKitchenObjectSO()).cuttingProgressMax, false);
 
             CuttingRecipeSO cuttingRecipeSO = GetCuttingRecipeSOWithInput(GetKitchenObject().GetKitchenObjectSO());
 

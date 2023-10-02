@@ -12,7 +12,7 @@ public abstract class BaseCounter : MonoBehaviour, IKitchenObjectParent
 
     public virtual void InteractSecond(Player player)
     {
-        Debug.LogError("BaseCounter.InteractSecond();");
+        // Only implemented on some counters
     }
 
     public Transform GetKitchenObjectFollowTransform()
