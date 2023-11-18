@@ -192,6 +192,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c06dc5e0a26e3de4294dcefaa8e464db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hasProgressGameObject: {fileID: 0}
   barImage: {fileID: 8859448265215445826}
 --- !u!114 &1262137673189556115
 MonoBehaviour:
@@ -205,6 +206,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11c020c75f48eb245937aa1446d58c08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mode: 2
 --- !u!1 &7822836789780808953
 GameObject:
   m_ObjectHideFlags: 0
