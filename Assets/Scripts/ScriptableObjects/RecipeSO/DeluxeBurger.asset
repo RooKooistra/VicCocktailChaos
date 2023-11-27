@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: DeluxeBurger
   m_EditorClassIdentifier: 
   kitchenObjectSOList:
-  - {fileID: 11400000, guid: 374cee847fceee34e9d3e18db5be39b1, type: 2}
   - {fileID: 11400000, guid: 1d2c0d8e4831ab241a91ae715dc2d540, type: 2}
+  - {fileID: 11400000, guid: 374cee847fceee34e9d3e18db5be39b1, type: 2}
   - {fileID: 11400000, guid: a20d8e5276a00e74189fa53ece1dff24, type: 2}
   - {fileID: 11400000, guid: 6ca2b4d85e6e7bf4199aa817ba12bad6, type: 2}
   - {fileID: 11400000, guid: 94d9c49bf552e234e9c6db19eec6c3e0, type: 2}

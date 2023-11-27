@@ -8,6 +8,7 @@ public class CuttingCounter : BaseCounter, IHasProgress
 
     public event Action<float, bool> OnProgressChanged;
     public event Action OnCut;
+    public static event Action<Transform> OnAnyCut;
 
     [SerializeField] private CuttingRecipeSO[] cuttingRecipeSOArray;
 
@@ -65,8 +66,9 @@ public class CuttingCounter : BaseCounter, IHasProgress
             // has kitchen object and can be cut
             cuttingProgress++;
 
-            // events for progress bar and animations
+            // events for progress bar and animations and sounds
             OnCut?.Invoke();
+            OnAnyCut?.Invoke(transform);
             OnProgressChanged?.Invoke((float)cuttingProgress / GetCuttingRecipeSOWithInput(GetKitchenObject().GetKitchenObjectSO()).cuttingProgressMax, false);
 
             CuttingRecipeSO cuttingRecipeSO = GetCuttingRecipeSOWithInput(GetKitchenObject().GetKitchenObjectSO());

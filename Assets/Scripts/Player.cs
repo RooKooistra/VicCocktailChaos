@@ -8,6 +8,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent
     public static Player Instance { get; private set; }
 
     public event Action<BaseCounter> OnSelectedCounterChange;
+    public event Action<Transform> OnPickedSomething;
 
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float rotateSpeed = 5f;
@@ -56,7 +57,8 @@ public class Player : MonoBehaviour, IKitchenObjectParent
 
     private void GameInput_OnInteractAction()
     {
-        // change to interface called IInteractable
+        if (!GameManager.Instance.IsGamePlaying()) return;
+
         if (selectedCounter != null)
         {
             selectedCounter.Interact(this);
@@ -65,6 +67,8 @@ public class Player : MonoBehaviour, IKitchenObjectParent
 
     private void GameInput_OnInteractSecondAction()
     {
+        if (!GameManager.Instance.IsGamePlaying()) return;
+
         if (selectedCounter != null)
         {
             selectedCounter.InteractSecond(this);
@@ -178,7 +182,12 @@ public class Player : MonoBehaviour, IKitchenObjectParent
 
     public void SetKitchenObject(KitchenObject kitchenObject)
     {
+        // player receives a kitchen object
         this.kitchenObject = kitchenObject;
+
+        // event for audio
+        if (kitchenObject == null) return;
+        OnPickedSomething?.Invoke(transform);
     }
 
     public KitchenObject GetKitchenObject()
