@@ -1,11 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class GameStartSountdownUI : MonoBehaviour
+public class GameplayTimerUI : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI countdownText;
+    [SerializeField] private Image timerImage;
 
     private void Start()
     {
@@ -22,11 +22,11 @@ public class GameStartSountdownUI : MonoBehaviour
 
     private void Update()
     {
-        countdownText.text = Mathf.Ceil(GameManager.Instance.GetCountdownToStartTimer()).ToString();
+        timerImage.fillAmount = GameManager.Instance.GetGameplayTimerNormalized();
     }
 
     private void GameManager_OnGameStateChanged()
     {
-        gameObject.SetActive(GameManager.Instance.IsCountdownToStartActive());
+        gameObject.SetActive(GameManager.Instance.IsGamePlaying());
     }
 }

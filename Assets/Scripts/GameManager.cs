@@ -6,14 +6,21 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance {  get; private set; }
+
+
     public event Action OnGameStateChanged;
+    public event Action<bool> OnGameTogglePause;
 
     private enum State { WaitingToStart, CountdownToStart, GamePlaying, GameOver}
     private State state;
 
-    private float waitingToStartTimer = 1f;
-    private float countdownToStartTimer = 3f;
-    private float gamePlayingTimer = 5f;
+    // game states change with timer for testing
+    [SerializeField] private float waitingToStartTimer = 1f;
+    [SerializeField] private float countdownToStartTimer = 3f;
+    [SerializeField] private float gamePlayingTimerMax = 20f;
+    private float gamePlayingTimer;
+    private bool isGamePaused = false;
+    
 
     private void Awake()
     {
@@ -25,8 +32,18 @@ public class GameManager : MonoBehaviour
         }
         Instance = this;
 
-        // waiting to start will be used for multiplayer but for now just start after a timer
+        // waiting to start will be used for multiplayer in the future
         state = State.WaitingToStart;
+    }
+
+    private void Start()
+    {
+        GameInput.Instance.OnPausedAction += GameInput_OnPausedAction;
+    }
+
+    private void OnDestroy()
+    {
+        GameInput.Instance.OnPausedAction -= GameInput_OnPausedAction;
     }
 
     private void Update()
@@ -46,6 +63,7 @@ public class GameManager : MonoBehaviour
                 if (countdownToStartTimer > 0f) return;
 
                 state = State.GamePlaying;
+                gamePlayingTimer = gamePlayingTimerMax; // set the gameplay timer
                 OnGameStateChanged?.Invoke();
                 break;
 
@@ -61,7 +79,19 @@ public class GameManager : MonoBehaviour
                 break;
         }
 
-        Debug.Log(state);
+        //Debug.Log(state);
+    }
+
+    private void GameInput_OnPausedAction()
+    {
+        TogglePauseGame();
+    }
+
+    public void TogglePauseGame()
+    {
+        isGamePaused = !isGamePaused;
+        Time.timeScale = isGamePaused? 0f : 1f;
+        OnGameTogglePause?.Invoke(isGamePaused);
     }
 
     public bool IsGamePlaying()
@@ -77,5 +107,15 @@ public class GameManager : MonoBehaviour
     public float GetCountdownToStartTimer()
     {
         return countdownToStartTimer;
+    }
+
+    public bool IsGameOverActive()
+    {
+        return state == State.GameOver;
+    }
+
+    public float GetGameplayTimerNormalized()
+    {
+        return 1 - (gamePlayingTimer / gamePlayingTimerMax);
     }
 }
