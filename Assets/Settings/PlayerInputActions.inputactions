@@ -24,7 +24,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "InteractSecond",
+                    "name": "InteractAlt",
                     "type": "Button",
                     "id": "9b5cf72a-a959-4b13-8e13-547276f46fd7",
                     "expectedControlType": "Button",
@@ -158,7 +158,7 @@
                     "id": "bb9c1d0e-d31e-49a0-8316-7857a44baf22",
                     "path": "<Gamepad>/leftStick",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "StickDeadzone(min=0.5)",
                     "groups": "",
                     "action": "Move",
                     "isComposite": false,
@@ -177,12 +177,34 @@
                 },
                 {
                     "name": "",
+                    "id": "e44645bc-b011-41cb-abd5-2181f866b1e6",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Interact",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "5c259cef-c3d9-471b-a025-1516f0f0aa61",
                     "path": "<Keyboard>/f",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "InteractSecond",
+                    "action": "InteractAlt",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "07b9b5f5-2f03-46ef-8302-a4ef65c90d2c",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "InteractAlt",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

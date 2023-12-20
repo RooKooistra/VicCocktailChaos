@@ -40,13 +40,13 @@ public class Player : MonoBehaviour, IKitchenObjectParent
     private void Start()
     {
         gameInput.OnInteractAction += GameInput_OnInteractAction;
-        gameInput.OnInteractSecondAction += GameInput_OnInteractSecondAction;
+        gameInput.OnInteractAltAction += GameInput_OnInteractSecondAction;
     }
 
     private void OnDisable()
     {
         gameInput.OnInteractAction -= GameInput_OnInteractAction;
-        gameInput.OnInteractSecondAction -= GameInput_OnInteractSecondAction;
+        gameInput.OnInteractAltAction -= GameInput_OnInteractSecondAction;
     }
 
     private void Update()
@@ -124,7 +124,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent
         Vector3 moveDirection = new Vector3(inputVector.x, 0f, inputVector.y);
 
         #region collisions with code
-        // The following is for collisions but I dont know why I wouldnt use a capsule collider. May remove this later
+        // The following is for collisions but may switch to a capsule colliders. May remove this later
         float moveDistance = moveSpeed * Time.deltaTime;
         bool canMove = !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, playerRadius, moveDirection, moveDistance);
         if (!canMove)
@@ -133,7 +133,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent
 
             // Attempt in X direction
             Vector3 moveDirectionX = new Vector3(moveDirection.x, 0, 0).normalized;
-            canMove = moveDirection.x != 0 && !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, playerRadius, moveDirectionX, moveDistance);
+            canMove = (moveDirection.x < -0.5f || moveDirection.x > 0.5f) && !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, playerRadius, moveDirectionX, moveDistance);
             if (canMove)
             {
                 // can move in the X direction
@@ -145,7 +145,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent
 
                 // Attempt in Z direction
                 Vector3 moveDirectionZ = new Vector3(0, 0, moveDirection.z).normalized;
-                canMove = moveDirection.z != 0 && !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, playerRadius, moveDirectionZ, moveDistance);
+                canMove = (moveDirection.z < -0.5f || moveDirection.z > 0.5f) && !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, playerRadius, moveDirectionZ, moveDistance);
                 if (canMove)
                 {
                     // can move in the Z direction

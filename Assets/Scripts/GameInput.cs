@@ -11,7 +11,7 @@ public class GameInput : MonoBehaviour
     private const string PLAYER_PREFS_BINDINGS = "Bindings";
 
     public event Action OnInteractAction;
-    public event Action OnInteractSecondAction;
+    public event Action OnInteractAltAction;
     public event Action OnPausedAction;
 
     public enum Binding
@@ -22,7 +22,10 @@ public class GameInput : MonoBehaviour
         MoveRight,
         Interact,
         InteractAlt,
-        Pause
+        Pause,
+        GamepadInteract,
+        GamepadInteractAlt,
+        GamepadPause
     }
 
     private PlayerInputActions playerInputActions;
@@ -46,14 +49,14 @@ public class GameInput : MonoBehaviour
         playerInputActions.Player.Enable();
 
         playerInputActions.Player.Interact.performed += Interact_performed;
-        playerInputActions.Player.InteractSecond.performed += InteractSecond_performed;
+        playerInputActions.Player.InteractAlt.performed += InteractAlt_performed;
         playerInputActions.Player.Pause.performed += Pause_performed;
     }
 
     private void OnDestroy()
     {
         playerInputActions.Player.Interact.performed -= Interact_performed;
-        playerInputActions.Player.InteractSecond.performed -= InteractSecond_performed;
+        playerInputActions.Player.InteractAlt.performed -= InteractAlt_performed;
         playerInputActions.Player.Pause.performed -= Pause_performed;
 
         playerInputActions.Dispose();
@@ -64,9 +67,9 @@ public class GameInput : MonoBehaviour
         OnPausedAction?.Invoke();
     }
 
-    private void InteractSecond_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+    private void InteractAlt_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
     {
-        OnInteractSecondAction?.Invoke();
+        OnInteractAltAction?.Invoke();
     }
 
     private void Interact_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
@@ -97,9 +100,16 @@ public class GameInput : MonoBehaviour
             case Binding.Interact:
                 return playerInputActions.Player.Interact.bindings[0].ToDisplayString();
             case Binding.InteractAlt:
-                return playerInputActions.Player.InteractSecond.bindings[0].ToDisplayString();
+                return playerInputActions.Player.InteractAlt.bindings[0].ToDisplayString();
             case Binding.Pause:
                 return playerInputActions.Player.Pause.bindings[0].ToDisplayString();
+            case Binding.GamepadInteract:
+                return playerInputActions.Player.Interact.bindings[1].ToDisplayString();
+            case Binding.GamepadInteractAlt:
+                return playerInputActions.Player.InteractAlt.bindings[1].ToDisplayString();
+            case Binding.GamepadPause:
+                return playerInputActions.Player.Pause.bindings[1].ToDisplayString();
+
 
         }
     }
@@ -135,12 +145,24 @@ public class GameInput : MonoBehaviour
                 bindingIndex = 0;
                 break;
             case Binding.InteractAlt:
-                inputAction = playerInputActions.Player.InteractSecond;
+                inputAction = playerInputActions.Player.InteractAlt;
                 bindingIndex = 0;
                 break;
             case Binding.Pause:
                 inputAction = playerInputActions.Player.Pause;
                 bindingIndex = 0;
+                break;
+            case Binding.GamepadInteract:
+                inputAction = playerInputActions.Player.Interact;
+                bindingIndex = 1;
+                break;
+            case Binding.GamepadInteractAlt:
+                inputAction = playerInputActions.Player.InteractAlt;
+                bindingIndex = 1;
+                break;
+            case Binding.GamepadPause:
+                inputAction = playerInputActions.Player.Pause;
+                bindingIndex = 1;
                 break;
         }
 
