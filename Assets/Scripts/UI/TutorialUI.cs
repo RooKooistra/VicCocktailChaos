@@ -23,7 +23,7 @@ public class TutorialUI : MonoBehaviour
         GameManager.Instance.OnGameStateChanged += GameManager_OnGameStateChanged;
         UpdateVisual();
 
-        gameObject.SetActive(true);
+        Show();
     }
 
     private void OnDestroy()
@@ -34,7 +34,10 @@ public class TutorialUI : MonoBehaviour
 
     private void GameManager_OnGameStateChanged()
     {
-        gameObject.SetActive(!GameManager.Instance.IsCountdownToStartActive());
+        if (GameManager.Instance.IsCountdownToStartActive())
+        {
+            Hide();
+        }
     }
 
     private void GameInput_OnBindingRebind()
@@ -44,15 +47,25 @@ public class TutorialUI : MonoBehaviour
 
     private void UpdateVisual()
     {
-        keyMoveUpText.text = GameInput.Instance.GetBindingText(GameInput.Binding.MoveUp);
-        keyMoveDownText.text = GameInput.Instance.GetBindingText(GameInput.Binding.MoveDown);
-        keyMoveLeftText.text = GameInput.Instance.GetBindingText(GameInput.Binding.MoveLeft);
-        keyMoveRightText.text = GameInput.Instance.GetBindingText(GameInput.Binding.MoveRight);
+        keyMoveUpText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Move_Up);
+        keyMoveDownText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Move_Down);
+        keyMoveLeftText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Move_Left);
+        keyMoveRightText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Move_Right);
         keyInteractText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Interact);
-        keyInteractAltText.text = GameInput.Instance.GetBindingText(GameInput.Binding.InteractAlt);
+        keyInteractAltText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Interact_Alt);
         keyPauseText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Pause);
-        gamepadInteractText.text = GameInput.Instance.GetBindingText(GameInput.Binding.GamepadInteract);
-        gamepadInteractAltText.text = GameInput.Instance.GetBindingText(GameInput.Binding.GamepadInteractAlt);
-        gamepadPauseText.text = GameInput.Instance.GetBindingText(GameInput.Binding.GamepadPause);
+        gamepadInteractText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Gamepad_Interact);
+        gamepadInteractAltText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Gamepad_Interact_Alt);
+        gamepadPauseText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Gamepad_Pause);
+    }
+
+    private void Show()
+    {
+        gameObject.SetActive(true);
+    }
+
+    private void Hide()
+    {
+        gameObject?.SetActive(false);
     }
 }

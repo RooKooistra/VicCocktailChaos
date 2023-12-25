@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using TMPro;
-using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -66,16 +65,16 @@ public class GamePausedUI : MonoBehaviour
             UpdateVisual();
         });
 
-        moveUpButton.onClick.AddListener(() => { RebindBinding(GameInput.Binding.MoveUp); });
-        moveDownButton.onClick.AddListener(() => { RebindBinding(GameInput.Binding.MoveDown); });
-        moveLeftButton.onClick.AddListener(() => { RebindBinding(GameInput.Binding.MoveLeft); });
-        moveRightButton.onClick.AddListener(() => { RebindBinding(GameInput.Binding.MoveRight); });
+        moveUpButton.onClick.AddListener(() => { RebindBinding(GameInput.Binding.Move_Up); });
+        moveDownButton.onClick.AddListener(() => { RebindBinding(GameInput.Binding.Move_Down); });
+        moveLeftButton.onClick.AddListener(() => { RebindBinding(GameInput.Binding.Move_Left); });
+        moveRightButton.onClick.AddListener(() => { RebindBinding(GameInput.Binding.Move_Right); });
         interactButton.onClick.AddListener(() => { RebindBinding(GameInput.Binding.Interact); });
-        interactAltButton.onClick.AddListener(() => { RebindBinding(GameInput.Binding.InteractAlt); });
+        interactAltButton.onClick.AddListener(() => { RebindBinding(GameInput.Binding.Interact_Alt); });
         pauseButton.onClick.AddListener(() => { RebindBinding(GameInput.Binding.Pause); });
-        gamepadInteractButton.onClick.AddListener(() => { RebindBinding(GameInput.Binding.GamepadInteract); });
-        gamepadInteractAltButton.onClick.AddListener(() => { RebindBinding(GameInput.Binding.GamepadInteractAlt); });
-        gamepadPauseButton.onClick.AddListener(() => { RebindBinding(GameInput.Binding.GamepadPause); });
+        gamepadInteractButton.onClick.AddListener(() => { RebindBinding(GameInput.Binding.Gamepad_Interact); });
+        gamepadInteractAltButton.onClick.AddListener(() => { RebindBinding(GameInput.Binding.Gamepad_Interact_Alt); });
+        gamepadPauseButton.onClick.AddListener(() => { RebindBinding(GameInput.Binding.Gamepad_Pause); });
     }
     private void Start()
     {
@@ -103,16 +102,16 @@ public class GamePausedUI : MonoBehaviour
         musicButtonText.text = $"MUSIC: {Mathf.Round(AudioManager.Instance.GetMusicVolume() * 10f)}";
 
         // update visuals for binding data
-        moveUpText.text = GameInput.Instance.GetBindingText(GameInput.Binding.MoveUp);
-        moveDownText.text = GameInput.Instance.GetBindingText(GameInput.Binding.MoveDown);
-        moveLeftText.text = GameInput.Instance.GetBindingText(GameInput.Binding.MoveLeft);
-        moveRightText.text = GameInput.Instance.GetBindingText(GameInput.Binding.MoveRight);
+        moveUpText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Move_Up);
+        moveDownText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Move_Down);
+        moveLeftText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Move_Left);
+        moveRightText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Move_Right);
         interactText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Interact);
-        interactAltText.text = GameInput.Instance.GetBindingText(GameInput.Binding.InteractAlt);
+        interactAltText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Interact_Alt);
         pauseText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Pause);
-        gamepadInteractText.text = GameInput.Instance.GetBindingText(GameInput.Binding.GamepadInteract);
-        gamepadInteractAltText.text = GameInput.Instance.GetBindingText(GameInput.Binding.GamepadInteractAlt);
-        gamepadPauseText.text = GameInput.Instance.GetBindingText(GameInput.Binding.GamepadPause);
+        gamepadInteractText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Gamepad_Interact);
+        gamepadInteractAltText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Gamepad_Interact_Alt);
+        gamepadPauseText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Gamepad_Pause);
     }
 
     private void RebindBinding(GameInput.Binding binding)

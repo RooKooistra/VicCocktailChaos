@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
     // game states change with timer for testing
     [SerializeField] private float countdownToStartTimer = 3f;
     [SerializeField] private float gamePlayingTimerMax = 20f;
+    [SerializeField] private bool skipStraightToGameStart = false;
     private float gamePlayingTimer;
     private bool isGamePaused = false;
     
@@ -39,6 +40,12 @@ public class GameManager : MonoBehaviour
     {
         GameInput.Instance.OnPausedAction += GameInput_OnPausedAction;
         GameInput.Instance.OnInteractAction += GameInput_OnInteractAction;
+
+        if(skipStraightToGameStart)
+        {
+            state = State.CountdownToStart;
+            OnGameStateChanged?.Invoke();
+        }
     }
 
     private void OnDestroy()
