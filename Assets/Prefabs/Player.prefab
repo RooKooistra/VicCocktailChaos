@@ -43,6 +43,7 @@ GameObject:
   - component: {fileID: 8561795497470160126}
   - component: {fileID: 6997869313185996755}
   - component: {fileID: 7063224509552154122}
+  - component: {fileID: 3069027340469432661}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -81,7 +82,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 7
   rotateSpeed: 20
-  gameInput: {fileID: 0}
   interactDistance: 2
   playerRadius: 0.7
   playerHeight: 2
@@ -119,6 +119,32 @@ MonoBehaviour:
   AlwaysReplicateAsRoot: 0
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
+--- !u!114 &3069027340469432661
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6779060690031863980}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a4cf2f0bc428a34ca2d20a990331a7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SyncPositionX: 1
+  SyncPositionY: 0
+  SyncPositionZ: 1
+  SyncRotAngleX: 0
+  SyncRotAngleY: 1
+  SyncRotAngleZ: 0
+  SyncScaleX: 0
+  SyncScaleY: 0
+  SyncScaleZ: 0
+  PositionThreshold: 0.001
+  RotAngleThreshold: 0.01
+  ScaleThreshold: 0.01
+  InLocalSpace: 0
+  Interpolate: 1
 --- !u!1001 &7608889856792990479
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -195,7 +221,17 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 3921605655806919318}
+    - targetCorrespondingSourceObject: {fileID: 3294758251327466535, guid: 1c5dda3c7cd3cf742afcade5419faeab,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 346368881091134361}
   m_SourcePrefab: {fileID: 100100000, guid: 1c5dda3c7cd3cf742afcade5419faeab, type: 3}
+--- !u!95 &4180619885442169435 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 6024899996280613204, guid: 1c5dda3c7cd3cf742afcade5419faeab,
+    type: 3}
+  m_PrefabInstance: {fileID: 7608889856792990479}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &4909310821878808360 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3294758251327466535, guid: 1c5dda3c7cd3cf742afcade5419faeab,
@@ -215,6 +251,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 8561795497470160126}
+--- !u!114 &346368881091134361
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4909310821878808360}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 863603d3f729d834aa4cc5e7f8664891, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TransitionStateInfoList: []
+  m_Animator: {fileID: 4180619885442169435}
 --- !u!4 &4909310821878808363 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3294758251327466532, guid: 1c5dda3c7cd3cf742afcade5419faeab,

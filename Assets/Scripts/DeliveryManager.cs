@@ -15,9 +15,10 @@ public class DeliveryManager : MonoBehaviour
 
     //scriptable object holding recipies (also scriptable objects holding kitchenSO's)
     private List<RecipeSO> waitingRecipeSOList = new List<RecipeSO>();
-
     private float spawnRecipeTimer;
+    [Tooltip("Seconds between new recipes spawned")]
     [SerializeField] private float spawnRecipeTimerMax = 4f;
+    [Tooltip("Max number of recipes in waiting list")]
     [SerializeField] private float waitingRecipeMax = 4f;
 
     private int successfulRecipesDelivered = 0;
