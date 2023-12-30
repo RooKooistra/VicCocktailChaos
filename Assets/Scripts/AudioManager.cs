@@ -39,7 +39,7 @@ public class AudioManager : MonoBehaviour
         DeliveryManager.Instance.OnRecipeCompleted += DeliveryManager_OnRecipeCompleted;
         DeliveryManager.Instance.OnRecipeFail += DeliveryManager_OnRecipeFail;
         CuttingCounter.OnAnyCut += CuttingCounter_OnAnyCut;
-        //Player.Instance.OnPickedSomething += Player_OnPickedSomething1;
+        Player.OnAnyPickedSomething += Player_OnPickedSomething;
         BaseCounter.OnAnyObjectPlacedHere += BaseCounter_OnAnyObjectPlacedHere;
         TrashCounter.OnAnyObjectTrashed += TrashCounter_OnAnyObjectTrashed;
     }
@@ -49,7 +49,7 @@ public class AudioManager : MonoBehaviour
         DeliveryManager.Instance.OnRecipeCompleted -= DeliveryManager_OnRecipeCompleted;
         DeliveryManager.Instance.OnRecipeFail -= DeliveryManager_OnRecipeFail;
         CuttingCounter.OnAnyCut -= CuttingCounter_OnAnyCut;
-        // Player.Instance.OnPickedSomething -= Player_OnPickedSomething1;
+        Player.OnAnyPickedSomething -= Player_OnPickedSomething;
         BaseCounter.OnAnyObjectPlacedHere -= BaseCounter_OnAnyObjectPlacedHere;
         TrashCounter.OnAnyObjectTrashed -= TrashCounter_OnAnyObjectTrashed;
     }
@@ -64,7 +64,7 @@ public class AudioManager : MonoBehaviour
         PlaySound(audioClipRefsSO.objectDrop, audioTransform.position);
     }
 
-    private void Player_OnPickedSomething1(Transform audioTransform)
+    private void Player_OnPickedSomething(Transform audioTransform)
     {
         PlaySound(audioClipRefsSO.objectPickup, audioTransform.position);
     }

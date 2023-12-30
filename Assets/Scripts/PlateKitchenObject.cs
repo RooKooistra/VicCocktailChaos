@@ -10,7 +10,13 @@ public class PlateKitchenObject : KitchenObject
     [SerializeField] private List<KitchenObjectSO> validKitchenObjectSOList;
 
     // used to track what is on the plate
-    private List<KitchenObjectSO> kitchenObjectSOList = new List<KitchenObjectSO>();
+    private List<KitchenObjectSO> kitchenObjectSOList;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        kitchenObjectSOList = new List<KitchenObjectSO>();
+    }
 
     public bool TryAddIngredient(KitchenObjectSO kitchenObjectSO)
     {

@@ -6,7 +6,15 @@ using Unity.Netcode;
 
 public class Player : NetworkBehaviour, IKitchenObjectParent
 {
-    // public static Player Instance { get; private set; }
+    public static event Action OnAnyPlayerSpawned;
+    public static event Action<Transform> OnAnyPickedSomething;
+
+    public static void ResetStaticData()
+    {
+        OnAnyPlayerSpawned = null;
+        OnAnyPickedSomething = null;
+    }
+    public static Player LocalInstance { get; private set; }
 
     public event Action<BaseCounter> OnSelectedCounterChange;
     public event Action<Transform> OnPickedSomething;
@@ -38,6 +46,16 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
         }
         Instance = this;
         */
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        if (IsOwner)
+        {
+            LocalInstance = this;
+        }
+
+        OnAnyPlayerSpawned?.Invoke();
     }
 
     private void Start()
@@ -252,6 +270,7 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
         // event for audio
         if (kitchenObject == null) return;
         OnPickedSomething?.Invoke(transform);
+        OnAnyPickedSomething?.Invoke(transform);
     }
 
     public KitchenObject GetKitchenObject()
@@ -267,6 +286,11 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
     public bool HasKitchenObject()
     {
         return this.kitchenObject != null;
+    }
+
+    public NetworkObject GetNetworkObject()
+    {
+        return NetworkObject;
     }
 }
      
