@@ -25,8 +25,11 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
     [SerializeField] private float interactDistance = 2f;
     [SerializeField] private float playerRadius = 0.7f;
     [SerializeField] private float playerHeight = 2f;
-    [SerializeField] private LayerMask countersLayerMask; //change to interactable after demo
+    [SerializeField] private LayerMask countersLayerMask;
+    [SerializeField] private LayerMask collisionsLayerMask; // set player layer mask to Players for player collisions
     [SerializeField] private Transform kitchenObjectHoldPoint;
+
+    [SerializeField] private List<Vector3> spawnPoints = new List<Vector3>(); // seperate players on spawn
 
     private KitchenObject kitchenObject;
 
@@ -35,9 +38,10 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
     private Vector3 lastInteractDirection = Vector3.zero;
     private BaseCounter selectedCounter;
 
+    /*
     private void Awake()
     {
-        /* OBSOLETE SINCE MULTIPLAYER
+        /OBSOLETE SINCE MULTIPLAYER
         if (Instance != null)
         {
             Debug.LogError($"There is more than one {Instance.name}! {transform}  -  {Instance}");
@@ -45,8 +49,9 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
             return;
         }
         Instance = this;
-        */
+        
     }
+    */
 
     public override void OnNetworkSpawn()
     {
@@ -55,6 +60,7 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
             LocalInstance = this;
         }
 
+        transform.position = spawnPoints[(int)OwnerClientId];
         OnAnyPlayerSpawned?.Invoke();
     }
 
@@ -140,65 +146,6 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
         }
     }
 
-    #region ServerRpc movement
-    /* use this code for Server Auth Movement - REMOVE client network transform and ADD network transform on Player prefab
-    private void HandleMovementServerAuth()
-    {
-        Vector2 inputVector = GameInput.Instance.GetMovementVectorNormalized();
-        HandleMovementServerRpc(inputVector);
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void HandleMovementServerRpc(Vector2 inputVector)
-    {
-        Vector3 moveDirection = new Vector3(inputVector.x, 0f, inputVector.y);
-
-        #region collisions with code
-        // The following is for collisions but may switch to a capsule colliders. May remove this later
-        float moveDistance = moveSpeed * Time.deltaTime;
-        bool canMove = !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, playerRadius, moveDirection, moveDistance);
-        if (!canMove)
-        {
-            // Cannot move towards moveDirection
-
-            // Attempt in X direction
-            Vector3 moveDirectionX = new Vector3(moveDirection.x, 0, 0).normalized;
-            canMove = (moveDirection.x < -0.5f || moveDirection.x > 0.5f) && !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, playerRadius, moveDirectionX, moveDistance);
-            if (canMove)
-            {
-                // can move in the X direction
-                moveDirection = moveDirectionX;
-            }
-            else
-            {
-                // can  not move in the X direction
-
-                // Attempt in Z direction
-                Vector3 moveDirectionZ = new Vector3(0, 0, moveDirection.z).normalized;
-                canMove = (moveDirection.z < -0.5f || moveDirection.z > 0.5f) && !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, playerRadius, moveDirectionZ, moveDistance);
-                if (canMove)
-                {
-                    // can move in the Z direction
-                    moveDirection = moveDirectionZ;
-                }
-            }
-        }
-
-        if (canMove)
-        {
-            transform.position += moveDirection * Time.deltaTime * moveSpeed;
-        }
-        #endregion
-
-        // for animation bool
-        isWalking = moveDirection != Vector3.zero;
-
-        // rotate player
-        transform.forward = Vector3.Slerp(transform.forward, moveDirection, Time.deltaTime * rotateSpeed);
-    }
-    */
-    #endregion
-
     private void HandleMovement()
     {
         Vector2 inputVector = GameInput.Instance.GetMovementVectorNormalized();
@@ -206,16 +153,18 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
         Vector3 moveDirection = new Vector3(inputVector.x, 0f, inputVector.y);
 
         #region collisions with code
-        // The following is for collisions but may switch to a capsule colliders. May remove this later
+        // The following is for collisions with raycasts but may switch to a capsule colliders.
+
         float moveDistance = moveSpeed * Time.deltaTime;
-        bool canMove = !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, playerRadius, moveDirection, moveDistance);
+        bool canMove = !Physics.BoxCast(transform.position, Vector3.one * playerRadius, moveDirection, Quaternion.identity, moveDistance, collisionsLayerMask);
+
         if (!canMove)
         {
             // Cannot move towards moveDirection
 
             // Attempt in X direction
             Vector3 moveDirectionX = new Vector3(moveDirection.x, 0, 0).normalized;
-            canMove = (moveDirection.x < -0.5f || moveDirection.x > 0.5f) && !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, playerRadius, moveDirectionX, moveDistance);
+            canMove = (moveDirection.x < -0.5f || moveDirection.x > 0.5f) && !Physics.BoxCast(transform.position, Vector3.one * playerRadius, moveDirectionX, Quaternion.identity, moveDistance, collisionsLayerMask);
             if (canMove)
             {
                 // can move in the X direction
@@ -227,7 +176,7 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
 
                 // Attempt in Z direction
                 Vector3 moveDirectionZ = new Vector3(0, 0, moveDirection.z).normalized;
-                canMove = (moveDirection.z < -0.5f || moveDirection.z > 0.5f) && !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, playerRadius, moveDirectionZ, moveDistance);
+                canMove = (moveDirection.z < -0.5f || moveDirection.z > 0.5f) && !Physics.BoxCast(transform.position, Vector3.one * playerRadius, moveDirectionZ, Quaternion.identity, moveDistance, collisionsLayerMask);
                 if (canMove)
                 {
                     // can move in the Z direction
