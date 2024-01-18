@@ -51,7 +51,7 @@ public class CuttingCounter : BaseCounter, IHasProgress
                     //player holding a plate - add ingredient to plate
                     if (plateKitchenObject.TryAddIngredient(GetKitchenObject().GetKitchenObjectSO()))
                     {
-                        // GetKitchenObject().DestroySelf(); - OLD METHOD
+                        // GetKitchenObject().DestroySelf(); - obsolete with multiplayer
                         KitchenObject.DestroyKitchenObject(GetKitchenObject());
                     }
                 }

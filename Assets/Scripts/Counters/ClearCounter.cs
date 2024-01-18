@@ -33,7 +33,8 @@ public class ClearCounter : BaseCounter
                     //player holding a plate - add ingredient to plate
                     if (plateKitchenObject.TryAddIngredient(GetKitchenObject().GetKitchenObjectSO()))
                     {
-                        GetKitchenObject().DestroySelf();
+                        KitchenObject.DestroyKitchenObject(GetKitchenObject());
+                        //GetKitchenObject().DestroySelf(); obsolete with mulyiplayer
                     }
                 }
                 else
@@ -44,7 +45,8 @@ public class ClearCounter : BaseCounter
                         // counter has a plate on top
                         if (plateKitchenObjectHeld.TryAddIngredient(player.GetKitchenObject().GetKitchenObjectSO())) // try add ingredient to PLAYER
                         {
-                            player.GetKitchenObject().DestroySelf();
+                            KitchenObject.DestroyKitchenObject(player.GetKitchenObject());
+                            // player.GetKitchenObject().DestroySelf(); obsolete with multiplayer
                         }
                     }
                 }
