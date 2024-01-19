@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -50,6 +51,7 @@ public class GamePausedUI : MonoBehaviour
 
         mainMenuButton.onClick.AddListener(() =>
         {
+            NetworkManager.Singleton.Shutdown(); // shuts down connection
             Loader.Load(Loader.Scene.MainMenuScene);
         });
 
@@ -78,7 +80,7 @@ public class GamePausedUI : MonoBehaviour
     }
     private void Start()
     {
-        GameManager.Instance.OnGameTogglePause += GameManager_OnGameTogglePause;
+        GameManager.Instance.OnLocalToggleGamePause += GameManager_OnLocalToggleGamePause;
         UpdateVisual();
 
         HidePressToRebindKey();
@@ -87,10 +89,10 @@ public class GamePausedUI : MonoBehaviour
 
     private void OnDestroy()
     {
-        GameManager.Instance.OnGameTogglePause -= GameManager_OnGameTogglePause;
+        GameManager.Instance.OnLocalToggleGamePause -= GameManager_OnLocalToggleGamePause;
     }
 
-    private void GameManager_OnGameTogglePause(bool isGamePaused)
+    private void GameManager_OnLocalToggleGamePause(bool isGamePaused)
     {
         gameObject.SetActive(isGamePaused);
         if (isGamePaused) resumeButton.Select();

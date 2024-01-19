@@ -20,7 +20,7 @@ public class TutorialUI : MonoBehaviour
     private void Start()
     {
         GameInput.Instance.OnBindingRebind += GameInput_OnBindingRebind;
-        GameManager.Instance.OnGameStateChanged += GameManager_OnGameStateChanged;
+        GameManager.Instance.OnLocalPLayerReadyChanged += GameManager_OnLocalPLayerReadyChanged;
         UpdateVisual();
 
         Show();
@@ -29,12 +29,12 @@ public class TutorialUI : MonoBehaviour
     private void OnDestroy()
     {
         GameInput.Instance.OnBindingRebind -= GameInput_OnBindingRebind;
-        GameManager.Instance.OnGameStateChanged -= GameManager_OnGameStateChanged;
+        GameManager.Instance.OnLocalPLayerReadyChanged -= GameManager_OnLocalPLayerReadyChanged;
     }
 
-    private void GameManager_OnGameStateChanged()
+    private void GameManager_OnLocalPLayerReadyChanged()
     {
-        if (GameManager.Instance.IsCountdownToStartActive())
+        if (GameManager.Instance.IsLocalPLayerReady())
         {
             Hide();
         }
