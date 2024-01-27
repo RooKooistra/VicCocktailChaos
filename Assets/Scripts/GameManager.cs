@@ -229,6 +229,11 @@ public class GameManager : NetworkBehaviour
         return isLocalPlayerReady;
     }
 
+    public bool IsWaitingToStart()
+    {
+        return state.Value == State.WaitingToStart;
+    }
+
     [ServerRpc(RequireOwnership = false)]
     private void TogglePauseGameServerRpc(bool isGamePaused, ServerRpcParams serverRpcParams = default)
     {
