@@ -17,7 +17,7 @@ public class GameManager : NetworkBehaviour
     // game states change with timer for testing
     [SerializeField] private float gamePlayingTimerMax = 20f;
     [SerializeField] private float countdownToStartDuration = 3f;
-
+    [SerializeField] private Transform playerPrefab;
 
     private enum State { WaitingToStart, CountdownToStart, GamePlaying, GameOver}
     private bool isLocalPlayerReady;
@@ -72,10 +72,10 @@ public class GameManager : NetworkBehaviour
         if (IsServer)
         {
             NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_OnClientDisconnectCallback;
+            NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += NetworkManager_OnLoadEventCompleted;
         }
     }
 
-    
     public override void OnNetworkDespawn()
     {
         state.OnValueChanged -= State_OnValueChanged;
@@ -84,9 +84,19 @@ public class GameManager : NetworkBehaviour
         if (IsServer)
         {
             NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_OnClientDisconnectCallback;
+            NetworkManager.Singleton.SceneManager.OnLoadEventCompleted -= NetworkManager_OnLoadEventCompleted;
         }
     }
-    
+
+    private void NetworkManager_OnLoadEventCompleted(string sceneName, UnityEngine.SceneManagement.LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
+    {
+        foreach (ulong clientId in clientsCompleted)
+        {
+            Transform playerTransform = Instantiate(playerPrefab);
+            playerTransform.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true);
+        }
+    }
+
 
     private void NetworkManager_OnClientDisconnectCallback(ulong clientId)
     {

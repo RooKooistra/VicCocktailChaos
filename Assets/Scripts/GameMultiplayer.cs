@@ -3,10 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameMultiplayer : NetworkBehaviour
 {
+    private const int MAX_PLAYER_AMOUNT = 4;
     public static GameMultiplayer Instance { get; private set; }
+
+    public event Action OnTryingToJoinGame;
+    public event Action OnFailedToJoinGame;
 
     [SerializeField] KitchenObjectListSO kitchenObjectListSO;
 
@@ -19,6 +24,8 @@ public class GameMultiplayer : NetworkBehaviour
             return;
         }
         Instance = this;
+
+        DontDestroyOnLoad(gameObject);
     }
 
     public void StartHost()
@@ -29,17 +36,36 @@ public class GameMultiplayer : NetworkBehaviour
 
     private void NetworkManager_ConnectionApprovalCallback(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
     {
-        bool isWaitingToStart = GameManager.Instance.IsWaitingToStart();
+        if(SceneManager.GetActiveScene().name != Loader.Scene.CharacterSelectScene.ToString())
+        {
+            response.Approved = false;
+            response.Reason = "GAME HAS ALREADY STARTED";
+            return;
+        }
 
-        response.Approved = isWaitingToStart;
-        response.CreatePlayerObject = isWaitingToStart;
+        if(NetworkManager.Singleton.ConnectedClientsIds.Count >= MAX_PLAYER_AMOUNT)
+        {
+            response.Approved = false;
+            response.Reason = "GAME IS FULL";
+            return;
+        }
+
+        response.Approved = true;
     }
 
     public void StartClient()
     {
+        OnTryingToJoinGame?.Invoke();
+
+        NetworkManager.Singleton.OnClientDisconnectCallback += NewtworkManager_OnClientDisconnectCallback;
         NetworkManager.Singleton.StartClient();
     }
-    
+
+    private void NewtworkManager_OnClientDisconnectCallback(ulong clientId)
+    {
+        OnFailedToJoinGame?.Invoke();
+    }
+
     public void SpawnKitchenObject(KitchenObjectSO kitchenObjectSO, IKitchenObjectParent kitchenObjectParent)
     {
         // need to parse an int and networkobjectreference as the kitchenobjectso and ikitchenobjectparent are not serializable
