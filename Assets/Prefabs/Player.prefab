@@ -85,7 +85,6 @@ MonoBehaviour:
   rotateSpeed: 20
   interactDistance: 2
   playerRadius: 0.7
-  playerHeight: 2
   countersLayerMask:
     serializedVersion: 2
     m_Bits: 8
@@ -93,6 +92,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 72
   kitchenObjectHoldPoint: {fileID: 7737921399817041538}
+  playerVisual: {fileID: 4749774910626009950}
   spawnPoints:
   - {x: 2, y: 0, z: 0}
   - {x: -2, y: 0, z: 0}
@@ -262,6 +262,18 @@ Animator:
     type: 3}
   m_PrefabInstance: {fileID: 7608889856792990479}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4749774910626009950 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2914570165034483793, guid: 1c5dda3c7cd3cf742afcade5419faeab,
+    type: 3}
+  m_PrefabInstance: {fileID: 7608889856792990479}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4909310821878808360}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8e3bfe48d5ea5f4b9f009a2d6869548, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4909310821878808360 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3294758251327466535, guid: 1c5dda3c7cd3cf742afcade5419faeab,

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
@@ -5,7 +6,14 @@ using UnityEngine;
 
 public class CharacterSelectReady : NetworkBehaviour
 { 
+    /// <summary>
+    /// script to check when all network players are ready
+    /// attached to game object in scene
+    /// </summary>
+
     public static CharacterSelectReady Instance;
+
+    public event Action OnPlayerReadyChanged;
 
     private Dictionary<ulong, bool> playerReadyDictionary = new Dictionary<ulong, bool>();
 
@@ -30,7 +38,7 @@ public class CharacterSelectReady : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void SetPlayerReadyServerRpc(ServerRpcParams serverRpcParams = default)
     {
-        Debug.Log(serverRpcParams.Receive.SenderClientId);
+        SetPlayerReadyClientRpc(serverRpcParams.Receive.SenderClientId);
         playerReadyDictionary[serverRpcParams.Receive.SenderClientId] = true;
 
         bool allClientsReady = true;
@@ -48,5 +56,18 @@ public class CharacterSelectReady : NetworkBehaviour
         {
             Loader.LoadNetwork(Loader.Scene.GameScene);
         }
+    }
+
+    [ClientRpc]
+    private void SetPlayerReadyClientRpc(ulong clientId) // for ready visual in player selection scene (CharacterSelectPlayer script)
+    {
+        playerReadyDictionary[clientId] = true;
+
+        OnPlayerReadyChanged?.Invoke();
+    }
+
+    public bool IsPlayerReady(ulong clientId)
+    {
+        return playerReadyDictionary.ContainsKey(clientId) && playerReadyDictionary[clientId];
     }
 }

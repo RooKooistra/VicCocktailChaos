@@ -24,10 +24,11 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
     // [SerializeField] private GameInput gameInput;
     [SerializeField] private float interactDistance = 2f;
     [SerializeField] private float playerRadius = 0.7f;
-    [SerializeField] private float playerHeight = 2f;
+    //[SerializeField] private float playerHeight = 2f;
     [SerializeField] private LayerMask countersLayerMask;
     [SerializeField] private LayerMask collisionsLayerMask; // set player layer mask to Players for player collisions
     [SerializeField] private Transform kitchenObjectHoldPoint;
+    [SerializeField] private PlayerVisual playerVisual;
 
     [SerializeField] private List<Vector3> spawnPoints = new List<Vector3>(); // seperate players on spawn
 
@@ -81,6 +82,9 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
     {
         GameInput.Instance.OnInteractAction += GameInput_OnInteractAction;
         GameInput.Instance.OnInteractAltAction += GameInput_OnInteractSecondAction;
+
+        PlayerData playerData = GameMultiplayer.Instance.GetPlayerDataFromClientID(OwnerClientId);
+        playerVisual.SetPlayerColour(GameMultiplayer.Instance.GetPlayerColor(playerData.colourId));
     }
 
     private void OnDisable()

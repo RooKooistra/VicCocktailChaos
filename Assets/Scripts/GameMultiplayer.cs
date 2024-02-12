@@ -12,8 +12,12 @@ public class GameMultiplayer : NetworkBehaviour
 
     public event Action OnTryingToJoinGame;
     public event Action OnFailedToJoinGame;
+    public event Action OnPlayerDataNetworkListChanged; // for character select player scene
 
     [SerializeField] KitchenObjectListSO kitchenObjectListSO;
+    [SerializeField] private List<Color> playerColourList = new List<Color>();
+
+    private NetworkList<PlayerData> playerDataNetworkList;
 
     private void Awake()
     {
@@ -26,12 +30,30 @@ public class GameMultiplayer : NetworkBehaviour
         Instance = this;
 
         DontDestroyOnLoad(gameObject);
+
+        playerDataNetworkList = new NetworkList<PlayerData>();
+        playerDataNetworkList.OnListChanged += PlayerDataNetworkList_OnListChanged;
     }
 
     public void StartHost()
     {
         NetworkManager.Singleton.ConnectionApprovalCallback += NetworkManager_ConnectionApprovalCallback;
+        NetworkManager.Singleton.OnClientConnectedCallback += NetworkManager_OnClientConnectedCallback;
         NetworkManager.Singleton.StartHost();
+    }
+
+    private void PlayerDataNetworkList_OnListChanged(NetworkListEvent<PlayerData> changeEvent)
+    {
+        OnPlayerDataNetworkListChanged?.Invoke();
+    }
+
+    private void NetworkManager_OnClientConnectedCallback(ulong newConnectedClientId)
+    {
+        playerDataNetworkList.Add(new PlayerData
+        {
+            clientId = newConnectedClientId,
+            colourId = GetFirstUnusedColourId(),
+        });
     }
 
     private void NetworkManager_ConnectionApprovalCallback(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
@@ -120,5 +142,100 @@ public class GameMultiplayer : NetworkBehaviour
     {
         kitchenObjectNetworkObjectReference.TryGet(out NetworkObject kitchenObjectNetworkObject);
         return kitchenObjectNetworkObject.GetComponent<KitchenObject>();
+    }
+
+    public bool IsPlayerConnected(int playerIndex)
+    {
+        return playerIndex < playerDataNetworkList.Count;
+    }
+
+    public PlayerData GetPlayerDataFromPlayerIndex(int playerIndex)
+    {
+        return playerDataNetworkList[playerIndex];
+    }
+
+    public PlayerData GetPlayerDataFromClientID(ulong clientID)
+    {
+        foreach (var playerData in playerDataNetworkList)
+        {
+            if(playerData.clientId == clientID)
+                return playerData;
+        }
+        return default;
+    }
+
+    public int GetPlayerDataIndexFromClientID(ulong clientID)
+    {
+        for (int i = 0; i < playerDataNetworkList.Count; i++)
+        {
+            if (playerDataNetworkList[i].clientId == clientID)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public PlayerData GetPlayerData()
+    {
+        return GetPlayerDataFromClientID(NetworkManager.Singleton.LocalClientId);
+    }
+
+    public Color GetPlayerColor(int colorId)
+    {
+        return playerColourList[colorId];
+    }
+
+    public List<Color> GetPlayerColorList()
+    {
+        return playerColourList;
+    }
+
+    public void ChangePlayerColour(int colourId)
+    {
+        ChangePlayerColourServerRpc(colourId);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void ChangePlayerColourServerRpc(int colorId, ServerRpcParams serverRpcParams = default)
+    {
+        if(!IsColourAvailable(colorId))
+        {
+            // not available
+            return;
+        }
+
+        int playerDataIndex = GetPlayerDataIndexFromClientID(serverRpcParams.Receive.SenderClientId);
+
+        // because this is a server serialised struct you need to grab it, modify it, then upload/save the changes
+        PlayerData playerData = playerDataNetworkList[playerDataIndex];
+
+        playerData.colourId = colorId;
+
+        playerDataNetworkList[playerDataIndex] = playerData;
+    }
+
+    private bool IsColourAvailable(int colourId)
+    {
+        foreach(var playerData in playerDataNetworkList)
+        {
+            if (playerData.colourId == colourId)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private int GetFirstUnusedColourId()
+    {
+        for(int i = 0; i < playerColourList.Count; i++) 
+        {
+            if (IsColourAvailable(i))
+            {
+                return i;
+            }
+        }
+        return -1;
     }
 }
