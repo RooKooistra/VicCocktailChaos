@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class GameMultiplayer : NetworkBehaviour
 {
-    private const int MAX_PLAYER_AMOUNT = 4;
+    public const int MAX_PLAYER_AMOUNT = 4;
     public static GameMultiplayer Instance { get; private set; }
 
     public event Action OnTryingToJoinGame;
