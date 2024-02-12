@@ -39,7 +39,22 @@ public class GameMultiplayer : NetworkBehaviour
     {
         NetworkManager.Singleton.ConnectionApprovalCallback += NetworkManager_ConnectionApprovalCallback;
         NetworkManager.Singleton.OnClientConnectedCallback += NetworkManager_OnClientConnectedCallback;
+        NetworkManager.Singleton.OnClientDisconnectCallback += NewtworkManager_Server_OnClientDisconnectCallback;
+
         NetworkManager.Singleton.StartHost();
+    }
+
+    private void NewtworkManager_Server_OnClientDisconnectCallback(ulong clientId)
+    {
+        for(int i = 0; i < playerDataNetworkList.Count; i++)
+        {
+            PlayerData playerData = playerDataNetworkList[i];
+            if(playerData.clientId == clientId)
+            {
+                // disconnected
+                playerDataNetworkList.RemoveAt(i);
+            }
+        }
     }
 
     private void PlayerDataNetworkList_OnListChanged(NetworkListEvent<PlayerData> changeEvent)
@@ -79,11 +94,11 @@ public class GameMultiplayer : NetworkBehaviour
     {
         OnTryingToJoinGame?.Invoke();
 
-        NetworkManager.Singleton.OnClientDisconnectCallback += NewtworkManager_OnClientDisconnectCallback;
+        NetworkManager.Singleton.OnClientDisconnectCallback += NewtworkManager_Client_OnClientDisconnectCallback;
         NetworkManager.Singleton.StartClient();
     }
 
-    private void NewtworkManager_OnClientDisconnectCallback(ulong clientId)
+    private void NewtworkManager_Client_OnClientDisconnectCallback(ulong clientId)
     {
         OnFailedToJoinGame?.Invoke();
     }
@@ -237,5 +252,13 @@ public class GameMultiplayer : NetworkBehaviour
             }
         }
         return -1;
+    }
+
+    public void KickPlayer(ulong clientId)
+    {
+        NetworkManager.Singleton.DisconnectClient(clientId);
+
+        // callback does not get called when kicking player so needs to be triggered manually
+        NewtworkManager_Server_OnClientDisconnectCallback(clientId);
     }
 }

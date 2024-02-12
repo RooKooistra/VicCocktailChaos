@@ -61,7 +61,7 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
             LocalInstance = this;
         }
 
-        transform.position = spawnPoints[(int)OwnerClientId];
+        transform.position = spawnPoints[GameMultiplayer.Instance.GetPlayerDataIndexFromClientID(OwnerClientId)];
         OnAnyPlayerSpawned?.Invoke();
 
         if (IsServer)

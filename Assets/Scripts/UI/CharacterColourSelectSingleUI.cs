@@ -26,6 +26,11 @@ public class CharacterColourSelectSingleUI : MonoBehaviour
         GameMultiplayer.Instance.OnPlayerDataNetworkListChanged += GameMultiplayer_OnPlayerDataNetworkListChanged;
     }
 
+    private void OnDestroy()
+    {
+        GameMultiplayer.Instance.OnPlayerDataNetworkListChanged -= GameMultiplayer_OnPlayerDataNetworkListChanged;
+    }
+
     private void GameMultiplayer_OnPlayerDataNetworkListChanged()
     {
         UpdateIsSelected();
