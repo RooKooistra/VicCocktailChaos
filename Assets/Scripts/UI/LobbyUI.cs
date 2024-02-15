@@ -11,12 +11,14 @@ public class LobbyUI : MonoBehaviour
     [SerializeField] private Button quickJoinButton;
     [SerializeField] private Button joinCodeButton;
     [SerializeField] private TMP_InputField joinCodeInputField;
+    [SerializeField] private TMP_InputField playerNameInputField;
     [SerializeField] private LobbyCreateUI lobbyCreateUI;
 
     private void Awake()
     {
         mainMenuButton.onClick.AddListener(() =>
         {
+            GameLobby.Instance.LeaveLobby();
             Loader.Load(Loader.Scene.MainMenuScene);
         });
 
@@ -33,6 +35,16 @@ public class LobbyUI : MonoBehaviour
         joinCodeButton.onClick.AddListener(() =>
         {
             GameLobby.Instance.JoinWithCode(joinCodeInputField.text);
+        });
+    }
+
+    private void Start()
+    {
+        playerNameInputField.text = GameMultiplayer.Instance.GetPlayerName();
+
+        playerNameInputField.onValueChanged.AddListener((string newText) =>
+        {
+            GameMultiplayer.Instance.SetPlayerName(newText);
         });
     }
 }

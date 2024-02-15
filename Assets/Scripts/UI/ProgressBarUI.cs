@@ -22,7 +22,7 @@ public class ProgressBarUI : MonoBehaviour
         hasProgress.OnProgressChanged += HasProgress_OnProgressChanged;
 
         barImage.fillAmount = 0;
-        gameObject.SetActive(false);
+        //gameObject.SetActive(false);
     }
 
     private void HasProgress_OnProgressChanged(float progressBarNormalized, bool isUrgent)

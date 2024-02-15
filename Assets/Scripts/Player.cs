@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
+using TMPro;
 
 public class Player : NetworkBehaviour, IKitchenObjectParent
 {
@@ -29,6 +30,7 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
     [SerializeField] private LayerMask collisionsLayerMask; // set player layer mask to Players for player collisions
     [SerializeField] private Transform kitchenObjectHoldPoint;
     [SerializeField] private PlayerVisual playerVisual;
+    [SerializeField] private TextMeshPro playerName;
 
     [SerializeField] private List<Vector3> spawnPoints = new List<Vector3>(); // seperate players on spawn
 
@@ -85,6 +87,7 @@ public class Player : NetworkBehaviour, IKitchenObjectParent
 
         PlayerData playerData = GameMultiplayer.Instance.GetPlayerDataFromClientID(OwnerClientId);
         playerVisual.SetPlayerColour(GameMultiplayer.Instance.GetPlayerColor(playerData.colourId));
+        playerName.text = playerData.playerName.ToString();
     }
 
     private void OnDisable()
