@@ -60,5 +60,7 @@ public class LobbyMessageUI : MonoBehaviour
     {
         //GameMultiplayer.Instance.OnTryingToJoinGame -= GameMultiplayer_OnTryingToJoinGame;
         GameMultiplayer.Instance.OnFailedToJoinGame -= GameMultiplayer_OnFailedToJoinGame;
+        GameLobby.Instance.OnActionStarted -= GameLobby_OnActionStarted;
+        GameLobby.Instance.OnActionFailed -= GameLobby_OnActionFailed;
     }
 }
