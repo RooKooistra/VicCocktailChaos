@@ -14,11 +14,14 @@ public class GameLobby : MonoBehaviour
 
     public event Action<string> OnActionStarted;
     public event Action<string> OnActionFailed;
+    public event Action<List<Lobby>> OnLobbyListChanged;
 
-    [SerializeField] private float heartBeatTimerMax;
+    [SerializeField] private float heartBeatTimerMax = 15f;
+    [SerializeField] private float listLobbiesTimerMax = 3f;
 
     private Lobby joinedLobby;
-    private float heartbeatTimer = 15f;
+    private float heartbeatTimer;
+    private float listLobbiesTimer;
 
     private void Awake()
     {
@@ -39,6 +42,19 @@ public class GameLobby : MonoBehaviour
     private void Update()
     {
         HandleHeartbeat();
+        HandlePeriodicListLobbies();
+    }
+
+    private void HandlePeriodicListLobbies()
+    {
+        if (joinedLobby != null && !AuthenticationService.Instance.IsSignedIn) return;
+
+        listLobbiesTimer -= Time.deltaTime;
+        if(listLobbiesTimer <= 0f)
+        {
+            listLobbiesTimer = listLobbiesTimerMax;
+            ListLobbies();
+        }
     }
 
     private void HandleHeartbeat()
@@ -69,6 +85,29 @@ public class GameLobby : MonoBehaviour
         await UnityServices.InitializeAsync();
 
         await AuthenticationService.Instance.SignInAnonymouslyAsync();
+    }
+
+    private async void ListLobbies()
+    {
+        try
+        {
+            QueryLobbiesOptions queryLobbiesOptions = new QueryLobbiesOptions
+            {
+                Filters = new List<QueryFilter>
+            {
+                new QueryFilter(QueryFilter.FieldOptions.AvailableSlots, "0", QueryFilter.OpOptions.GT)
+            }
+            };
+
+            QueryResponse queryResponse = await LobbyService.Instance.QueryLobbiesAsync(queryLobbiesOptions);
+
+            OnLobbyListChanged?.Invoke(queryResponse.Results);
+
+        } catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+        }
+
     }
 
     public async void CreateLobby(string lobbyName, bool isPrivate)
@@ -115,6 +154,23 @@ public class GameLobby : MonoBehaviour
             OnActionFailed?.Invoke("COULD NOT FIND A LOBBY TO QUICK JOIN!");
         }
         
+    }
+
+    public async void JoinWithId(string lobbyId, string lobbyName = "")
+    {
+        OnActionStarted?.Invoke($"JOINING LOBBY ({lobbyName})... ");
+
+        try
+        {
+            joinedLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobbyId);
+            GameMultiplayer.Instance.StartClient();
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+            OnActionFailed?.Invoke($"FAILED TO JOIN LOBBY ({lobbyName})!");
+        }
+
     }
 
     public async void JoinWithCode(string lobbyCode)

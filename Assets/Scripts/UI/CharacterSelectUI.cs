@@ -17,6 +17,7 @@ public class CharacterSelectUI : MonoBehaviour
     {
         mainMenuButton.onClick.AddListener(() =>
         {
+            GameLobby.Instance.LeaveLobby();
             NetworkManager.Singleton.Shutdown(); // always shutdown netowrk manager when going to main scene
             Loader.Load(Loader.Scene.MainMenuScene);
         });
