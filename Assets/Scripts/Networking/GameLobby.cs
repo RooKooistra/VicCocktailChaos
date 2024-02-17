@@ -87,7 +87,9 @@ public class GameLobby : MonoBehaviour
         if (UnityServices.State == ServicesInitializationState.Initialized) return;
 
         InitializationOptions initializationOptions = new InitializationOptions();
-        initializationOptions.SetProfile(UnityEngine.Random.Range(0,10000).ToString());
+
+        // sets a different profile every time for muiltiple test builds
+        // initializationOptions.SetProfile(UnityEngine.Random.Range(0,10000).ToString());
 
         await UnityServices.InitializeAsync();
 

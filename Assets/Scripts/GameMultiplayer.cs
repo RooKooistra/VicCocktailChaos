@@ -166,6 +166,11 @@ public class GameMultiplayer : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void SpawnKitchenObjectServerRpc(int kitchenObjectSOIndex, NetworkObjectReference kitchenObjectParentNetworkObjectReference)
     {
+        kitchenObjectParentNetworkObjectReference.TryGet(out NetworkObject kitchenObjectParentNetworkObject);
+        IKitchenObjectParent kitchenObjectParent = kitchenObjectParentNetworkObject.GetComponent<IKitchenObjectParent>();
+
+        if (kitchenObjectParent.HasKitchenObject()) return; // Parent already has an object
+
         Transform kitchenObjectTransform = Instantiate(GetKitchenObjectSOFromIndex(kitchenObjectSOIndex).prefab);
 
         NetworkObject kitchenObjectNetworkObject = kitchenObjectTransform.GetComponent<NetworkObject>();
@@ -173,8 +178,6 @@ public class GameMultiplayer : NetworkBehaviour
 
         KitchenObject kitchenObject = kitchenObjectTransform.GetComponent<KitchenObject>();
 
-        kitchenObjectParentNetworkObjectReference.TryGet(out NetworkObject kitchenObjectParentNetworkObject);
-        IKitchenObjectParent kitchenObjectParent = kitchenObjectParentNetworkObject.GetComponent<IKitchenObjectParent>();
         kitchenObject.SetKitchenObjectParent(kitchenObjectParent);
     }
 
@@ -196,9 +199,13 @@ public class GameMultiplayer : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void DestroyKitchenObjectServerRpc(NetworkObjectReference kitchenObjectNetworkObjectReference)
     {
+        KitchenObject kitchenObject = GetKitchenObjectFromNetworkObjectReference(kitchenObjectNetworkObjectReference);
+
+        if (kitchenObject == null) return; // this object is already destroyed
+
         ClearKitchenObjectParentClientRpc(kitchenObjectNetworkObjectReference);
 
-        GetKitchenObjectFromNetworkObjectReference(kitchenObjectNetworkObjectReference).DestroySelf();
+        kitchenObject.DestroySelf();
     }
 
     [ClientRpc]
