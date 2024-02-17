@@ -6,6 +6,11 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Unity.Services.Authentication;
+using Unity.Netcode.Transports.UTP;
+using Unity.Networking.Transport.Relay;
+using Unity.Services.Relay.Models;
+using System.Threading.Tasks;
+using Unity.Services.Relay;
 
 public class GameMultiplayer : NetworkBehaviour
 {
@@ -13,6 +18,8 @@ public class GameMultiplayer : NetworkBehaviour
     public const string PLAYER_PREFS_PLAYER_NAME_MULTIPLAYER = "PlayerNameMultiplayer";
 
     public static GameMultiplayer Instance { get; private set; }
+
+    public static bool playMultiplayer = true;
 
     public event Action OnTryingToJoinGame;
     public event Action OnFailedToJoinGame;
@@ -41,6 +48,18 @@ public class GameMultiplayer : NetworkBehaviour
         playerDataNetworkList = new NetworkList<PlayerData>();
         playerDataNetworkList.OnListChanged += PlayerDataNetworkList_OnListChanged;
     }
+    
+    private void Start()
+    {
+        if (!playMultiplayer)
+        {
+            // single player mode
+            OnTryingToJoinGame?.Invoke();
+
+            StartHost();
+            Loader.LoadNetwork(Loader.Scene.GameScene);
+        }
+    }
 
     public string GetPlayerName()
     {
@@ -55,11 +74,16 @@ public class GameMultiplayer : NetworkBehaviour
 
     public void StartHost()
     {
+        SetupListeners();
+
+        NetworkManager.Singleton.StartHost();
+    }
+
+    private void SetupListeners()
+    {
         NetworkManager.Singleton.ConnectionApprovalCallback += NetworkManager_ConnectionApprovalCallback;
         NetworkManager.Singleton.OnClientConnectedCallback += NetworkManager_OnClientConnectedCallback;
         NetworkManager.Singleton.OnClientDisconnectCallback += NewtworkManager_Server_OnClientDisconnectCallback;
-
-        NetworkManager.Singleton.StartHost();
     }
 
     private void NewtworkManager_Server_OnClientDisconnectCallback(ulong clientId)

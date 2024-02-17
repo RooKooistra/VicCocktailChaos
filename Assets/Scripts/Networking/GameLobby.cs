@@ -123,7 +123,7 @@ public class GameLobby : MonoBehaviour
     {
         try
         {
-            Allocation allocation = await RelayService.Instance.CreateAllocationAsync(GameMultiplayer.MAX_PLAYER_AMOUNT - 1);
+            Allocation allocation = await RelayService.Instance.CreateAllocationAsync(GameMultiplayer.MAX_PLAYER_AMOUNT - 1); // minus 1 for the host
 
             return allocation;
         }
@@ -187,7 +187,7 @@ public class GameLobby : MonoBehaviour
             joinedLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, GameMultiplayer.MAX_PLAYER_AMOUNT, new CreateLobbyOptions { IsPrivate = isPrivate });
 
             Allocation allocation = await AllocateRelay(); // returns an Unity relay allocation
-            string relayJoinCode = await GetRelayJoinCode(allocation);
+            string relayJoinCode = await GetRelayJoinCode(allocation); // returns the join code to the allocation
 
             // updating the lobby to hold the data for the relay join code
             await LobbyService.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions

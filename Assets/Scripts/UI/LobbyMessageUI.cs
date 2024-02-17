@@ -24,17 +24,20 @@ public class LobbyMessageUI : MonoBehaviour
 
     private void GameLobby_OnActionFailed(string message)
     {
+        closeButton.gameObject.SetActive(true);
         ShowMessage(message);
     }
 
     private void GameLobby_OnActionStarted(string message)
     {
+        closeButton.gameObject.SetActive(false);
         ShowMessage(message);
     }
 
     private void GameMultiplayer_OnFailedToJoinGame()
     {
         string message = NetworkManager.Singleton.DisconnectReason == "" ? "FAILED TO CONNECT" : NetworkManager.Singleton.DisconnectReason;
+        closeButton.gameObject.SetActive(true);
         ShowMessage(message);
 
         Show();
@@ -49,6 +52,8 @@ public class LobbyMessageUI : MonoBehaviour
     private void Show()
     {
         gameObject.SetActive(true);
+
+        closeButton.Select();
     }
 
     private void Hide()
